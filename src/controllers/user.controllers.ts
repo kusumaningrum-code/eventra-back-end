@@ -77,10 +77,14 @@ export class UserController {
         { expiresIn: "1h" }
       );
 
-      await sendEmail(req.body.email, "Registration Info", "register.hbs", {
-        username: req.body.username,
-        link: `${process.env.FE_URL}/verify?a_t=${token}`,
-      });
+      const htmlContent = `
+  <h1>Welcome, ${req.body.username}!</h1>
+  <p>Thanks for signing up. Please verify your email by clicking the link below:</p>
+  <a href="${process.env.FE_URL}/verify?a_t=${token}">Verify Account</a>
+`;
+
+      await sendEmail(req.body.email, "Registration Info", htmlContent);
+
       console.log("FE_URL:", process.env.FE_URL);
 
       return ResponseHandler.success(
@@ -341,10 +345,17 @@ export class UserController {
         { expiresIn: "30m" }
       );
 
-      await sendEmail(req.body.email, "Forgot Password", "forgot.hbs", {
-        username: req.body.username,
-        link: `${process.env.FE_URL}/reset-password?a_t=${resetToken}`,
-      });
+      const htmlContent = `
+  <h1>Password Reset</h1>
+  <p>Hello, ${user.fullname || "User"}!</p>
+  <p>We received a request to reset your password. Click the link below to proceed:</p>
+  <a href="${
+    process.env.FE_URL
+  }/reset-password?a_t=${resetToken}">Reset Your Password</a>
+  <p>This link will expire in 30 minutes.</p>
+`;
+
+      await sendEmail(req.body.email, "Forgot Password", htmlContent);
 
       return ResponseHandler.success(
         res,
