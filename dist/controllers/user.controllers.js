@@ -53,7 +53,16 @@ class UserController {
                 }
                 // buat pengguna baru
                 const user = yield prisma_1.prisma.user.create({
-                    data: Object.assign(Object.assign({}, req.body), { password: newPassword, referralCode: referralCode, referredById: referredById }),
+                    data: {
+                        username: req.body.username,
+                        fullname: req.body.fullname,
+                        email: req.body.email,
+                        password: newPassword,
+                        phone: req.body.phone,
+                        gender: req.body.gender,
+                        referralCode: referralCode,
+                        referredById: referredById,
+                    },
                 });
                 if (referredById) {
                     // // bikin kupon diskon untuk pengguna baru yang baru daftar pake referral
@@ -64,6 +73,7 @@ class UserController {
                     username: req.body.username,
                     link: `${process.env.FE_URL}/verify?a_t=${token}`,
                 });
+                console.log("FE_URL:", process.env.FE_URL);
                 return ResponseHandler_1.default.success(res, "Your signup is success, please check your email", 201, {
                     token,
                     user,
@@ -71,6 +81,7 @@ class UserController {
             }
             catch (error) {
                 console.log(error);
+                console.log("FE_URL:", process.env.FE_URL);
                 return ResponseHandler_1.default.error(res, "Registration failed", error, 500);
             }
         });

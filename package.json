@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc && cp -rv public dist/public",
+    "build": "tsc",
     "dev": "nodemon src/index.ts",
     "start": "nodemon src/index.ts",
     "postinstall": "prisma generate"
