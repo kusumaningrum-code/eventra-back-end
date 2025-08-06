@@ -55,8 +55,12 @@ export class UserController {
       // buat pengguna baru
       const user = await prisma.user.create({
         data: {
-          ...req.body,
+          username: req.body.username,
+          fullname: req.body.fullname,
+          email: req.body.email,
           password: newPassword,
+          phone: req.body.phone,
+          gender: req.body.gender,
           referralCode: referralCode,
           referredById: referredById,
         },
@@ -77,6 +81,7 @@ export class UserController {
         username: req.body.username,
         link: `${process.env.FE_URL}/verify?a_t=${token}`,
       });
+      console.log("FE_URL:", process.env.FE_URL);
 
       return ResponseHandler.success(
         res,
@@ -89,6 +94,8 @@ export class UserController {
       );
     } catch (error: any) {
       console.log(error);
+      console.log("FE_URL:", process.env.FE_URL);
+
       return ResponseHandler.error(res, "Registration failed", error, 500);
     }
   }
@@ -411,7 +418,7 @@ export class UserController {
       });
 
       const totalPoints = point.reduce((sum, point) => sum + point.points, 0);
-      console.log("ini total pointsnya", totalPoints)
+      console.log("ini total pointsnya", totalPoints);
       return ResponseHandler.success(
         res,
         "Success get Points",

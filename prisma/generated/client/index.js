@@ -258,7 +258,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\Full Stack Web Development Purwadhika\\JCWD-0412\\03_Backend\\mini-pro\\backend-minpro\\prisma\\generated\\client",
+      "value": "E:\\CODE\\eventra-be-new\\backend-minpro\\prisma\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -272,7 +272,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\Full Stack Web Development Purwadhika\\JCWD-0412\\03_Backend\\mini-pro\\backend-minpro\\prisma\\schema.prisma",
+    "sourceFilePath": "E:\\CODE\\eventra-be-new\\backend-minpro\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -286,7 +286,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
