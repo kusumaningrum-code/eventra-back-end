@@ -7,7 +7,8 @@ import ResponseHandler from "../utils/ResponseHandler";
 export class TransactionController {
   async createTransaction(req: Request, res: Response): Promise<any> {
     try {
-      const { ticketId, userId, promoCode, finalPrice, proofImage } = req.body;
+      const { ticketId, userId, promoCode, finalPrice } = req.body;
+      const proofImage = req.file;
 
       if (!ticketId || !userId) {
         return res.status(400).json({
@@ -16,7 +17,6 @@ export class TransactionController {
         });
       }
 
-      //cek apakah tiket tersedia
       const ticket = await prisma.ticket.findUnique({
         where: { ticket_id: Number(ticketId) },
       });
@@ -28,18 +28,53 @@ export class TransactionController {
       if (ticket.available <= 0) {
         return res.status(400).json({ error: "Ticket is sold out" });
       }
-      //o
 
       let imageUrl = "";
       if (proofImage) {
         try {
-          const uploadResult = await cloudinary.uploader.upload(proofImage, {
-            folder: "payment-proofs",
+          console.log("File info:", {
+            originalname: proofImage.originalname,
+            mimetype: proofImage.mimetype,
+            size: proofImage.size,
+            hasBuffer: !!proofImage.buffer,
           });
-          imageUrl = uploadResult.secure_url;
+
+          const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: "payment-proofs",
+                resource_type: "auto",
+                public_id: `proof_${userId}_${Date.now()}`,
+                overwrite: true,
+                transformation: [
+                  { width: 1000, height: 1000, crop: "limit" },
+                  { quality: "auto" },
+                ],
+              },
+              (error, result) => {
+                if (error) {
+                  console.error("Cloudinary upload error:", error);
+                  reject(error);
+                } else {
+                  console.log("Cloudinary upload success:", result?.secure_url);
+                  resolve(result);
+                }
+              }
+            );
+
+            uploadStream.end(proofImage.buffer);
+          });
+
+          imageUrl = (uploadResult as any).secure_url;
         } catch (uploadError) {
           console.error("Image upload failed:", uploadError);
-          return res.status(500).json({ error: "Failed to upload image" });
+          return res.status(500).json({
+            error: "Failed to upload image to Cloudinary",
+            details:
+              uploadError instanceof Error
+                ? uploadError.message
+                : "Unknown upload error",
+          });
         }
       }
 
@@ -63,7 +98,11 @@ export class TransactionController {
         },
       });
 
-      return res.status(201).json(transaction);
+      return res.status(201).json({
+        success: true,
+        message: "Transaction created successfully",
+        data: transaction,
+      });
     } catch (error) {
       console.error("Transaction error:", error);
       return res.status(500).json({

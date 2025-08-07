@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { TransactionController } from "../controllers/transaction.controller";
 import { verifyToken } from "../middleware/verifyToken";
+import { uploaderMemory } from "../middleware/uploader";
 
 export class TransactionRouter {
   private route: Router;
@@ -18,7 +19,11 @@ export class TransactionRouter {
       this.transactionController.getOrganizerEventStats
     );
 
-    this.route.post("/", this.transactionController.createTransaction);
+    this.route.post(
+      "/",
+      uploaderMemory().single("proofImage"),
+      this.transactionController.createTransaction
+    );
     this.route.get(
       "/user/:userId",
       this.transactionController.getUserTransactions
