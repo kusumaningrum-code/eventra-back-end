@@ -61,6 +61,7 @@ export class UserController {
           password: newPassword,
           phone: req.body.phone,
           gender: req.body.gender,
+          role: req.body.role,
           referralCode: referralCode,
           referredById: referredById,
         },
